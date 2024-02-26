@@ -115,6 +115,13 @@ def range_(args: list[SExpr]) -> SExpr:
     start, stop = int(args[0]), int(args[1])
     return list(map(str, range(start, stop)))
 
+def nth(args: list[SExpr]) -> SExpr:
+    assert len(args) == 2, "`nth` expects exactly 2 args"
+    assert isinstance(args[0], list), "`nth` expects a list as its first argument"
+    assert isinstance(args[1], str), "`nth` does not expect a list as it second argument"
+    xs, i = args[0], int(args[1])
+    return xs[i]
+
 Builtin: TypeAlias = Callable[[list[SExpr]], SExpr]
 BUILTINS: dict[str, Builtin] = {
     "+": plus,
@@ -134,6 +141,7 @@ BUILTINS: dict[str, Builtin] = {
     "tail": tail,
     "is-empty": is_empty,
     "range": range_,
+    "nth": nth,
 }
 
 def iff(args: list[SExpr]) -> SExpr:

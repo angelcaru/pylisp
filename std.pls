@@ -21,11 +21,6 @@
       0
       (+ 1 (len (tail l)))
   ))
-  (fun nth (l n)
-    (if (= n 0)
-      (head l)
-      (nth (tail l) (- n 1))
-  ))
 
   (fun first (p) (head p))
   (fun second (p) (head (tail p)))
