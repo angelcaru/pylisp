@@ -73,6 +73,25 @@ def module(stuff: list[SExpr]) -> SExpr:
 
     return ["module", name]
 
+def eq(args: list[SExpr]) -> str:
+    assert len(args) == 2, "`=` expects exactly 2 args"
+    arg1, arg2 = args[0], args[1]
+    return str(arg1 == arg2).lower()
+
+def lt(args: list[SExpr]) -> str:
+    assert len(args) == 2, "`<` expects exactly 2 args"
+    assert isinstance(args[0], str), "`<` does not expect list arguments"
+    assert isinstance(args[1], str), "`<` does not expect list arguments"
+    arg1, arg2 = int(args[0]), int(args[1])
+    return str(arg1 < arg2).lower()
+
+def gt(args: list[SExpr]) -> str:
+    assert len(args) == 2, "`>` expects exactly 2 args"
+    assert isinstance(args[0], str), "`>` does not expect list arguments"
+    assert isinstance(args[1], str), "`>` does not expect list arguments"
+    arg1, arg2 = int(args[0]), int(args[1])
+    return str(arg1 > arg2).lower()
+
 Builtin: TypeAlias = Callable[[list[SExpr]], SExpr]
 BUILTINS: dict[str, Builtin] = {
     "+": plus,
@@ -84,6 +103,28 @@ BUILTINS: dict[str, Builtin] = {
     "println": println,
     "load": load,
     "module": module,
+    "=": eq,
+    "<": lt,
+    ">": gt,
+}
+
+def iff(args: list[SExpr]) -> SExpr:
+    match args:
+        case [cond, then, elze]:
+            # HACK: we need the functions from `main.py` so we use
+            # sys.modules to get them
+            res = sys.modules["__main__"].run_sexpr(cond)
+            if res == "true":
+                return then
+            elif res == "false":
+                return elze
+            else:
+                assert False, "the condition of the `if` macro must return `true` or `false`"
+        case _:
+            assert False, "`if` macro takes exactly 3 args"
+
+BUILTIN_MACROS: dict[str, Builtin] = {
+    "if": iff,
 }
 
 def is_lisp_str(sexpr: SExpr) -> bool:
