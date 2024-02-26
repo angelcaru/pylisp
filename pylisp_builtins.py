@@ -3,7 +3,7 @@ import sys
 
 SExpr: TypeAlias = "str | list[SExpr]"
 
-def todo(*args: object, **kwargs: dict) -> Never:
+def todo(*args: object, **kwargs: dict) -> NoReturn:
     assert False, "not implemented"
 
 def plus(args: list[SExpr]) -> str:
@@ -39,7 +39,7 @@ def div(args: list[SExpr]) -> str:
 def quote(args: list[SExpr]) -> SExpr:
     return args
 
-def quit_(_: list[SExpr]) -> Never:
+def quit_(_: list[SExpr]) -> NoReturn:
     quit()
 
 def println(args: list[SExpr]) -> SExpr:

@@ -76,7 +76,7 @@ def render_as_sexpr(sexpr: SExpr) -> str:
     elts: list[str] = []
     for x in sexpr:
         elts.append(render_as_sexpr(x))
-    return f"({" ".join(elts)})"
+    return f"({' '.join(elts)})"
 
 
 def repl():
