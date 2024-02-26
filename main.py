@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from typing import *
 
+from pylisp_builtins import BUILTINS
+
 Predicate = Callable[[str], bool]
 def find_by_pred(s: str, i: int, p: Predicate) -> int:
     while i < len(s) and not p(s[i]):
@@ -29,55 +31,6 @@ def parse(code: str) -> SExpr:
         assert False, f"TODO: report errors: {i} < {len(code)}"
     return sexpr
 
-
-def todo(*args: object, **kwargs: dict) -> Never:
-    assert False, "not implemented"
-
-def plus(args: list[SExpr]) -> str:
-    # TODO: proper error handling
-    sum_ = 0
-    for arg in args:
-        assert isinstance(arg, str), "`+` does not expect list arguments"
-        sum_ += int(arg)
-    return str(sum_)
-
-def mul(args: list[SExpr]) -> str:
-    # TODO: proper error handling
-    prod = 1
-    for arg in args:
-        assert isinstance(arg, str), "`*` does not expect list arguments"
-        prod *= int(arg)
-    return str(prod)
-
-def minus(args: list[SExpr]) -> str:
-    assert len(args) == 2, "`-` expects exactly 2 args"
-    assert isinstance(args[0], str), "`-` does not expect list arguments"
-    assert isinstance(args[1], str), "`-` does not expect list arguments"
-    arg1, arg2 = int(args[0]), int(args[1])
-    return str(arg1 - arg2)
-
-def div(args: list[SExpr]) -> str:
-    assert len(args) == 2, "`/` expects exactly 2 args"
-    assert isinstance(args[0], str), "`/` does not expect list arguments"
-    assert isinstance(args[1], str), "`/` does not expect list arguments"
-    arg1, arg2 = int(args[0]), int(args[1])
-    return str(arg1 // arg2)
-
-def quote(args: list[SExpr]) -> SExpr:
-    return args
-
-def quit_(_: list[SExpr]) -> Never:
-    quit()
-
-Builtin: TypeAlias = Callable[[list[SExpr]], SExpr]
-BUILTINS: dict[str, Builtin] = {
-    "+": plus,
-    "-": minus,
-    "*": mul,
-    "/": div,
-    "quote": quote,
-    "quit": quit_,
-}
 def run_sexpr(sexpr: SExpr) -> SExpr:
     if isinstance(sexpr, str): return sexpr
 
