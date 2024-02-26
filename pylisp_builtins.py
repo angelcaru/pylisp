@@ -123,8 +123,24 @@ def iff(args: list[SExpr]) -> SExpr:
         case _:
             assert False, "`if` macro takes exactly 3 args"
 
+def foreach(args: list[SExpr]) -> SExpr:
+    match args:
+        case [elts, sym, body]:
+            # HACK: we need the functions from `main.py` so we use
+            # sys.modules to get them
+            lst = sys.modules["__main__"].run_sexpr(elts)
+            assert isinstance(lst, list), "the first argument of the `foreach` macro must be a list"
+            assert isinstance(sym, str), "the second argument of the `foreach` macro must be a symbol"
+            outs: list[SExpr] = ["'"]
+            for elt in lst:
+                outs.append(bind(sym, elt, body))
+            return outs
+        case _:
+            assert False, "the `foreach` macro takes exactly 3 args"
+
 BUILTIN_MACROS: dict[str, Builtin] = {
     "if": iff,
+    "foreach": foreach,
 }
 
 def is_lisp_str(sexpr: SExpr) -> bool:
@@ -133,3 +149,14 @@ def is_lisp_str(sexpr: SExpr) -> bool:
         if not isinstance(ch, str): return False
         if len(ch) != 1: return False
     return True
+
+def bind(sym: str, expr: SExpr, block: SExpr) -> SExpr:
+    if block == sym:
+        return expr
+    elif isinstance(block, str):
+        return block
+    else:
+        new_sexpr: list[SExpr] = []
+        for child in block:
+            new_sexpr.append(bind(sym, expr, child))
+        return new_sexpr

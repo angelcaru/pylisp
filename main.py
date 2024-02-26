@@ -18,7 +18,7 @@ def parse(code: str) -> SExpr:
             return code[start:word_end], word_end
         elif code[start] == '"':
             str_end = find_by_pred(code, start + 1, lambda x: x == '"')
-            quote: list[SExpr] = ["quote"]
+            quote: list[SExpr] = ["'"]
             return quote + list(code[start+1:str_end]), str_end + 1
         
         sexpr: list[SExpr] = []
