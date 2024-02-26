@@ -39,4 +39,17 @@
     (reduce l (x a)
       (+ x a) 0
   ))
+
+  (fun unshift (x l)
+    (foreach (range 0 (+ (len l) 1)) i
+      (if (= i 0)
+        x
+        (nth l (- i 1))
+  )))
+  (fun push (x l)
+    (foreach (range 0 (+ (len l) 1)) i
+      (if (= i (len l))
+        x
+        (nth l i)
+  )))
 )

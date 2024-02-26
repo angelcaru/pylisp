@@ -48,7 +48,8 @@ def run_sexpr(sexpr: SExpr) -> SExpr:
     
     if fun_name in BUILTIN_MACROS:
         assert isinstance(fun_name, str)
-        return run_sexpr(BUILTIN_MACROS[fun_name](raw_args))
+        processed_sexpr = BUILTIN_MACROS[fun_name](raw_args)
+        return run_sexpr(processed_sexpr)
 
     args = []
     for arg in raw_args:
@@ -67,7 +68,7 @@ def run_sexpr(sexpr: SExpr) -> SExpr:
             bound_body = bind(param, arg, bound_body)
         return run_sexpr(bound_body)
     else:
-        assert False, f"unknown function or macro: {fun_name}"
+        assert False, f"unknown function or macro: {fun_name} {render_as_sexpr(sexpr)}"
 
 def render_as_sexpr(sexpr: SExpr) -> str:
     if isinstance(sexpr, str): return sexpr

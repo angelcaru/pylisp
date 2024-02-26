@@ -188,6 +188,9 @@ def fun(args: list[SExpr]) -> SExpr:
         case _:
             assert False, "invalid `fun` definition"
 
+def literal(sexpr: SExpr) -> SExpr:
+    return sexpr if isinstance(sexpr, str) else (["'"] + sexpr) # type: ignore
+
 def reduce(args: list[SExpr]) -> SExpr:
     match args:
         case [elts, [str(iter_name), str(acc_name)], body, first_acc]:
@@ -198,9 +201,9 @@ def reduce(args: list[SExpr]) -> SExpr:
             acc = sys.modules["__main__"].run_sexpr(first_acc)
             for elt in lst:
                 acc = sys.modules["__main__"].run_sexpr(
-                    bind(iter_name, elt, 
-                         bind(acc_name, acc, body)))
-            return acc if isinstance(acc, str) else (["'"] + acc)
+                    bind(iter_name, elt,
+                         bind(acc_name, literal(acc), body)))
+            return literal(acc)
         case _:
             assert False, "the `reduce` macro takes exactly 4 args and the second one must be a 2-symbol list"
 
