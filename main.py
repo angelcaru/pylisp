@@ -13,6 +13,10 @@ SExpr: TypeAlias = "str | list[SExpr]"
 
 def parse(code: str) -> SExpr:
     def parse_impl(code: str, *, start: int = 0) -> tuple[SExpr, int]:
+        if start + 1 < len(code) and code[start:start+2] == "//":
+            start = find_by_pred(code, start, lambda x: x == "\n") + 1
+        
+        if start >= len(code): return [], start
         if code[start] != "(" and code[start] != '"':
             word_end = find_by_pred(code, start, lambda x: x.isspace() or x == ")")
             return code[start:word_end], word_end

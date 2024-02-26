@@ -1,7 +1,7 @@
 (module block
-  (println (block
+  (println (block       // Commented out code: (println "Why?")
     (println "Hello")
     (println "Hi")
-    (return "Foo")
+    (return "Foo")      // Return a value from the block
   ))
 )
