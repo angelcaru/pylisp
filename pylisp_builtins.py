@@ -41,6 +41,16 @@ def quote(args: list[SExpr]) -> SExpr:
 def quit_(_: list[SExpr]) -> Never:
     quit()
 
+def println(args: list[SExpr]) -> SExpr:
+    assert len(args) == 1, "`println` expects exactly 1 arg"
+    arg = args[0]
+    assert isinstance(arg, list), "`println` expects a string"
+    for ch in arg:
+        assert isinstance(ch, str) and len(ch) == 1, "`println` expects a string"
+    
+    print("".join(map(str, arg)))
+    return []
+
 Builtin: TypeAlias = Callable[[list[SExpr]], SExpr]
 BUILTINS: dict[str, Builtin] = {
     "+": plus,
@@ -49,4 +59,5 @@ BUILTINS: dict[str, Builtin] = {
     "/": div,
     "quote": quote,
     "quit": quit_,
+    "println": println,
 }
