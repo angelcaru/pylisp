@@ -1,4 +1,5 @@
 from typing import *
+import sys
 
 SExpr: TypeAlias = "str | list[SExpr]"
 
@@ -44,12 +45,33 @@ def quit_(_: list[SExpr]) -> Never:
 def println(args: list[SExpr]) -> SExpr:
     assert len(args) == 1, "`println` expects exactly 1 arg"
     arg = args[0]
-    assert isinstance(arg, list), "`println` expects a string"
-    for ch in arg:
-        assert isinstance(ch, str) and len(ch) == 1, "`println` expects a string"
-    
+
+    assert is_lisp_str(arg), "`println` expects a string"
     print("".join(map(str, arg)))
     return []
+
+def load(args: list[SExpr]) -> SExpr:
+    assert len(args) == 1, "`load` expects exactly 1 arg"
+    arg = args[0]
+
+    assert is_lisp_str(arg), "`load` expects a string"
+    file_path = "".join(map(str, arg))
+
+    with open(file_path, "r") as f:
+        code = f.read()
+    # HACK: we need the functions from `main.py` so we use
+    # sys.modules to get them
+    sexpr = sys.modules["__main__"].parse(code)
+    ret = sys.modules["__main__"].run_sexpr(sexpr)
+
+    return ret
+
+def module(stuff: list[SExpr]) -> SExpr:
+    assert len(stuff) >= 1, "missing module name"
+    name = stuff[0]
+    assert isinstance(name, str), "module name must be a symbol"
+
+    return ["module", name]
 
 Builtin: TypeAlias = Callable[[list[SExpr]], SExpr]
 BUILTINS: dict[str, Builtin] = {
@@ -60,4 +82,13 @@ BUILTINS: dict[str, Builtin] = {
     "quote": quote,
     "quit": quit_,
     "println": println,
+    "load": load,
+    "module": module,
 }
+
+def is_lisp_str(sexpr: SExpr) -> bool:
+    if not isinstance(sexpr, list): return False
+    for ch in sexpr:
+        if not isinstance(ch, str): return False
+        if len(ch) != 1: return False
+    return True
