@@ -36,7 +36,7 @@ def parse(code: str) -> SExpr:
     
     sexpr, i = parse_impl(code, start=0)
     if i < len(code):
-        assert False, f"TODO: report errors: {i} < {len(code)}"
+        assert False, f"Extra characters at end of line: {code[i:]}"
     return sexpr
 
 def run_sexpr(sexpr: SExpr) -> SExpr:
@@ -85,5 +85,18 @@ def repl():
     print(" => {}".format(render_as_sexpr(res)))
 
 
+def report_err(e):
+    for i, arg in enumerate(e.args):
+        if i == 0:
+            print(f"ERROR: {arg}")
+        else:
+            print(f"  {arg}")
+
 while __name__ == "__main__":
-    repl()
+    try:
+        repl()
+    except Exception as error:
+        if isinstance(error, EOFError):
+            quit()
+        else:
+            report_err(error)
