@@ -108,6 +108,13 @@ def is_empty(args: list[SExpr]) -> SExpr:
     assert isinstance(args[0], list), "`is-empty` expects only list arguments"
     return str(len(args[0]) == 0).lower()
 
+def range_(args: list[SExpr]) -> SExpr:
+    assert len(args) == 2, "`range` expects exactly 2 args"
+    assert isinstance(args[0], str), "`range` does not expect list arguments"
+    assert isinstance(args[1], str), "`range` does not expect list arguments"
+    start, stop = int(args[0]), int(args[1])
+    return list(map(str, range(start, stop)))
+
 Builtin: TypeAlias = Callable[[list[SExpr]], SExpr]
 BUILTINS: dict[str, Builtin] = {
     "+": plus,
@@ -126,6 +133,7 @@ BUILTINS: dict[str, Builtin] = {
     "head": head,
     "tail": tail,
     "is-empty": is_empty,
+    "range": range_,
 }
 
 def iff(args: list[SExpr]) -> SExpr:
