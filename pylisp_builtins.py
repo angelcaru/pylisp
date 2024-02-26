@@ -92,6 +92,10 @@ def gt(args: list[SExpr]) -> str:
     arg1, arg2 = int(args[0]), int(args[1])
     return str(arg1 > arg2).lower()
 
+def ret(args: list[SExpr]) -> SExpr:
+    assert len(args) == 1, "`return` expects exactly 1 arg"
+    return ["magic: return", args[0]]
+
 Builtin: TypeAlias = Callable[[list[SExpr]], SExpr]
 BUILTINS: dict[str, Builtin] = {
     "+": plus,
@@ -106,6 +110,7 @@ BUILTINS: dict[str, Builtin] = {
     "=": eq,
     "<": lt,
     ">": gt,
+    "return": ret,
 }
 
 def iff(args: list[SExpr]) -> SExpr:
@@ -138,9 +143,17 @@ def foreach(args: list[SExpr]) -> SExpr:
         case _:
             assert False, "the `foreach` macro takes exactly 3 args"
 
+def block(args: list[SExpr]) -> SExpr:
+    for arg in args:
+        res = sys.modules["__main__"].run_sexpr(arg)
+        if len(res) == 2 and res[0] == "magic: return":
+            return ["'"] + res[1]
+    return []
+
 BUILTIN_MACROS: dict[str, Builtin] = {
     "if": iff,
     "foreach": foreach,
+    "block": block,
 }
 
 def is_lisp_str(sexpr: SExpr) -> bool:
