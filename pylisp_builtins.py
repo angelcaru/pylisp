@@ -147,13 +147,29 @@ def block(args: list[SExpr]) -> SExpr:
     for arg in args:
         res = sys.modules["__main__"].run_sexpr(arg)
         if len(res) == 2 and res[0] == "magic: return":
-            return ["'"] + res[1]
+            return (["'"] if isinstance(res[1], list) else "") + res[1]
     return []
+
+Function: TypeAlias = tuple[list[str], SExpr]
+FUNCTIONS: dict[str, Function] = {}
+
+def fun(args: list[SExpr]) -> SExpr:
+    match args:
+        case [str(name), [*args], [*body]]:
+            for arg in args:
+                assert isinstance(arg, str), "function parameters must be symbols"
+            params = list(map(str, args))
+
+            FUNCTIONS[name] = params, body
+            return []
+        case _:
+            assert False, "invalid `fun` definition"
 
 BUILTIN_MACROS: dict[str, Builtin] = {
     "if": iff,
     "foreach": foreach,
     "block": block,
+    "fun": fun,
 }
 
 def is_lisp_str(sexpr: SExpr) -> bool:

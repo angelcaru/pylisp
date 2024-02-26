@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from typing import *
 
-from pylisp_builtins import BUILTINS, BUILTIN_MACROS
+from pylisp_builtins import BUILTINS, BUILTIN_MACROS, FUNCTIONS, bind
 
 Predicate = Callable[[str], bool]
 def find_by_pred(s: str, i: int, p: Predicate) -> int:
@@ -55,7 +55,19 @@ def run_sexpr(sexpr: SExpr) -> SExpr:
         args.append(run_sexpr(arg))
     
     assert isinstance(fun_name, str)
-    return BUILTINS[fun_name](args)
+
+    if fun_name in BUILTINS:
+        return BUILTINS[fun_name](args)
+    elif fun_name in FUNCTIONS:
+        params, body = FUNCTIONS[fun_name]
+        bound_body = body
+        for param, arg in zip(params, args):
+            if isinstance(arg, list):
+                arg = ["'"] + arg # type: ignore
+            bound_body = bind(param, arg, bound_body)
+        return run_sexpr(bound_body)
+    else:
+        assert False, f"unknown function or macro: {fun_name}"
 
 def render_as_sexpr(sexpr: SExpr) -> str:
     if isinstance(sexpr, str): return sexpr
