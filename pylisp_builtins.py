@@ -96,6 +96,18 @@ def ret(args: list[SExpr]) -> SExpr:
     assert len(args) == 1, "`return` expects exactly 1 arg"
     return ["magic: return", args[0]]
 
+def head(args: list[SExpr]) -> SExpr:
+    assert isinstance(args[0], list), "`head` expects only list arguments"
+    return args[0][0]
+
+def tail(args: list[SExpr]) -> SExpr:
+    assert isinstance(args[0], list), "`tail` expects only list arguments"
+    return args[0][1:]
+
+def is_empty(args: list[SExpr]) -> SExpr:
+    assert isinstance(args[0], list), "`is-empty` expects only list arguments"
+    return str(len(args[0]) == 0).lower()
+
 Builtin: TypeAlias = Callable[[list[SExpr]], SExpr]
 BUILTINS: dict[str, Builtin] = {
     "+": plus,
@@ -111,6 +123,9 @@ BUILTINS: dict[str, Builtin] = {
     "<": lt,
     ">": gt,
     "return": ret,
+    "head": head,
+    "tail": tail,
+    "is-empty": is_empty,
 }
 
 def iff(args: list[SExpr]) -> SExpr:
