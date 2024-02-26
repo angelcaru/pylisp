@@ -188,11 +188,28 @@ def fun(args: list[SExpr]) -> SExpr:
         case _:
             assert False, "invalid `fun` definition"
 
+def reduce(args: list[SExpr]) -> SExpr:
+    match args:
+        case [elts, [str(iter_name), str(acc_name)], body, first_acc]:
+            # HACK: we need the functions from `main.py` so we use
+            # sys.modules to get them
+            lst = sys.modules["__main__"].run_sexpr(elts)
+            assert isinstance(lst, list), "the first argument of the `reduce` macro must be a list"
+            acc = sys.modules["__main__"].run_sexpr(first_acc)
+            for elt in lst:
+                acc = sys.modules["__main__"].run_sexpr(
+                    bind(iter_name, elt, 
+                         bind(acc_name, acc, body)))
+            return acc if isinstance(acc, str) else (["'"] + acc)
+        case _:
+            assert False, "the `reduce` macro takes exactly 4 args and the second one must be a 2-symbol list"
+
 BUILTIN_MACROS: dict[str, Builtin] = {
     "if": iff,
     "foreach": foreach,
     "block": block,
     "fun": fun,
+    "reduce": reduce,
 }
 
 def is_lisp_str(sexpr: SExpr) -> bool:

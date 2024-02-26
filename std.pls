@@ -34,4 +34,9 @@
     (foreach (range 0 (len l)) i
       (' i (nth l i))
   ))
+
+  (fun sum (l)
+    (reduce l (x a)
+      (+ x a) 0
+  ))
 )
