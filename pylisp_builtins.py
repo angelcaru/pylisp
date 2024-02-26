@@ -207,12 +207,21 @@ def reduce(args: list[SExpr]) -> SExpr:
         case _:
             assert False, "the `reduce` macro takes exactly 4 args and the second one must be a 2-symbol list"
 
+def bind_macro(args: list[SExpr]) -> SExpr:
+    match args:
+        case [str(sym), expr, body]:
+            val = sys.modules["__main__"].run_sexpr(expr)
+            return bind(sym, literal(val), body)
+        case _:
+            assert False, "invalid `bind`"
+
 BUILTIN_MACROS: dict[str, Builtin] = {
     "if": iff,
     "foreach": foreach,
     "block": block,
     "fun": fun,
     "reduce": reduce,
+    "bind": bind_macro,
 }
 
 def is_lisp_str(sexpr: SExpr) -> bool:

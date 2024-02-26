@@ -46,10 +46,10 @@
         x
         (nth l (- i 1))
   )))
-  (fun push (x l)
-    (foreach (range 0 (+ (len l) 1)) i
-      (if (= i (len l))
+  (fun push (x xs) (bind l (len xs)
+    (foreach (range 0 (+ l 1)) i
+      (if (= i l)
         x
-        (nth l i)
-  )))
+        (nth xs i)
+  ))))
 )
