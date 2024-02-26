@@ -98,7 +98,7 @@ BUILTINS: dict[str, Builtin] = {
     "-": minus,
     "*": mul,
     "/": div,
-    "quote": quote,
+    "'": quote,
     "quit": quit_,
     "println": println,
     "load": load,
